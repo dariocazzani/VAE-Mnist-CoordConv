@@ -7,7 +7,7 @@ Implementation of the CoordConv (Convolution and Deconvolution) for a Variationa
 pip install -r requirements.txt
 ```
 
-## Run training for both teacher and student
+## Run training
 ```
 python trainVAE.py
 ```
