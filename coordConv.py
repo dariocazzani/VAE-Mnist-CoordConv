@@ -6,8 +6,6 @@ class AddCoords(base.Layer):
     """
     def __init__(self, x_dim, y_dim, with_r=False):
         super(AddCoords, self).__init__()
-        if (x_dim < 2 or y_dim < 2):
-            raise ValueError("Input Dimensions should be greater than 1")
         self.x_dim = x_dim
         self.y_dim = y_dim
         self.with_r = with_r
@@ -48,7 +46,11 @@ class CoordConv(base.Layer):
     """
     def __init__(self, x_dim, y_dim, with_r, *args, **kwargs):
         super(CoordConv, self).__init__()
-        self.addcoords = AddCoords(x_dim=x_dim, y_dim=y_dim, with_r=with_r)
+        if x_dim < 2 or y_dim < 2:
+            self.addcoords = lambda *args: None
+        else:
+            self.addcoords = AddCoords(x_dim=x_dim, y_dim=y_dim, with_r=with_r)
+
         self.conv = tf.layers.Conv2D(*args, **kwargs)
 
     def call(self, input_tensor):
@@ -62,7 +64,10 @@ class CoordDeconv(base.Layer):
     """
     def __init__(self, x_dim, y_dim, with_r, *args, **kwargs):
         super(CoordDeconv, self).__init__()
-        self.addcoords = AddCoords(x_dim=x_dim, y_dim=y_dim, with_r=with_r)
+        if x_dim < 2 or y_dim < 2:
+            self.addcoords = lambda x: x
+        else:
+            self.addcoords = AddCoords(x_dim=x_dim, y_dim=y_dim, with_r=with_r)
         self.conv = tf.layers.Conv2DTranspose(*args, **kwargs)
 
     def call(self, input_tensor):

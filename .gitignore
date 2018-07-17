@@ -1,4 +1,5 @@
 __pycache__/
 data
 logdir
-saved_models
+saved_models*
+._*
