@@ -1,6 +1,6 @@
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("./data/", validation_size=0, one_hot=True)
+mnist = input_data.read_data_sets("./data/", validation_size=10000, one_hot=True)
 
 import tensorflow as tf
 import os, tqdm
@@ -105,9 +105,16 @@ def train_vae():
 
 			if np.isnan(loss_value):
 				raise ValueError('Loss value is NaN')
-			if step % 10 == 0 and step > 0:
-				print ('step {}: training loss {:.6f}'.format(step, loss_value))
+			if step % 100 == 0 and step > 0:
+
+				batch_x_val, _ = mnist.validation.next_batch(10000)
+				batch_x_val = np.reshape(batch_x_val, [-1, 28, 28, 1])
+				feed_dict = {network.image: batch_x_val}
+				val_loss_value = sess.run(network.loss, feed_dict=feed_dict)
 				save_path = saver.save(sess, model_name, global_step=global_step)
+
+				print ('step {}: training   loss {:.6f}'.format(step, loss_value))
+				print ('step {}: validation loss {:.6f}'.format(step, val_loss_value))
 			step+=1
 
 	except (KeyboardInterrupt, SystemExit):
