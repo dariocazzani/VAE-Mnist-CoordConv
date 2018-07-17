@@ -7,23 +7,26 @@ class Network(object):
 	# Create model
 	def __init__(self, coordConv=True):
 		self.useCoordConv = coordConv
-
+		self.latent_vec_size = 32
+		if self.useCoordConv:
+			self.logsfolder = 'coordConv'
+		else:
+			self.logsfolder = 'standard'
 		self.global_step = tf.Variable(0, name='global_step', trainable=False)
 
-		self.latent_vec_size = 32
 		self.image = tf.placeholder(tf.float32, [None, 28, 28, 1], name='image')
 		self.latent_vector = tf.placeholder(tf.float32, [None, self.latent_vec_size])
-		tf.summary.image('Originals', self.image, 10)
+		tf.summary.image('{}/Originals'.format(self.logsfolder), self.image, 10)
 
 		self.z_mu, self.z_logvar = self.encoder(self.image)
 		self.z = self.sample_z(self.z_mu, self.z_logvar)
 
 		self.reconstructions = self.decoder(self.z)
-		self.generated_images = self.decoder(self.latent_vector)
-		tf.summary.image('Reconstructions', self.reconstructions, 10)
+
+		tf.summary.image('{}/Reconstructions'.format(self.logsfolder), self.reconstructions, 10)
 
 		self.loss = self.compute_loss()
-		tf.summary.scalar('Loss', self.loss)
+		tf.summary.scalar('{}/Loss'.format(self.logsfolder), self.loss)
 
 		optimizer = tf.train.AdamOptimizer(LEARNING_RATE)
 		gradients = optimizer.compute_gradients(loss=self.loss)
@@ -60,8 +63,8 @@ class Network(object):
 		return z_mu, z_logvar
 
 	def decoder(self, z):
-		x = tf.layers.dense(z, 768, activation=None)
-		x = tf.reshape(x, [-1, 1, 1, 768])
+		x = tf.layers.dense(z, 784, activation=None)
+		x = tf.reshape(x, [-1, 1, 1, 784])
 
 		if self.useCoordConv:
 			coordDeconv1 = CoordDeconv(int(x.get_shape()[1]), int(x.get_shape()[2]), False, filters=64, kernel_size=5, strides=2, padding='valid', activation=tf.nn.relu)

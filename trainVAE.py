@@ -18,7 +18,7 @@ def str2bool(v):
 
 from network import Network
 
-TOT_STEPS = 10000
+TOT_STEPS = 5000
 BATCH_SIZE = 128
 
 def train_vae(coordConv):

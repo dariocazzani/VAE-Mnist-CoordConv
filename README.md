@@ -2,17 +2,27 @@
 
 Implementation of the CoordConv (Convolution and Deconvolution) for a Variational Autoencoder applied to the MNIST dataset
 
-## Install dependencies:
+## 1. Install dependencies:
 ```
 pip install -r requirements.txt
 ```
 
-## Run training
+## 2. Run training without coordConv layers
 ```
-python trainVAE.py
+python trainVAE.py --useCoordConv False
 ```
 
-## Display Reconstructions on TensorBoard
+## 3. Run training with coordConv layers
+```
+python trainVAE.py --useCoordConv True
+```
+
+## 4. Display Reconstructions on TensorBoard
 ```
 tensorboard --logdir logdir
+```
+
+## 5. Compare reconstructions:
+```
+python compare_generated_images.py
 ```
